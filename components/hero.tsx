@@ -24,6 +24,7 @@ export type HeroContent = {
   ctas: {
     linkedin: string;
     contact: string;
+    contactHref: string;
   };
   proofPoints: [string, string, string];
   imageAlt: string;
@@ -264,30 +265,46 @@ export function Hero({
         >
           <motion.div
             variants={revealItem}
-            className="absolute right-0 top-0 z-30 flex items-center gap-3"
+            className="absolute right-0 top-0 z-30"
             aria-label={content.languageLabel}
           >
-            <button
-              type="button"
-              onClick={() => onLanguageChange("en")}
-              aria-pressed={language === "en"}
-              className={`type-label transition-colors duration-200 ${
-                language === "en" ? "text-white" : "text-[var(--muted)] hover:text-white"
-              }`}
+            <div
+              role="group"
+              aria-label={content.languageLabel}
+              className="relative inline-flex rounded-full border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-1 shadow-[0_10px_32px_rgba(0,0,0,0.18)] backdrop-blur-sm"
             >
-              EN
-            </button>
-            <span className="type-label text-[color:rgba(255,255,255,0.18)]">/</span>
-            <button
-              type="button"
-              onClick={() => onLanguageChange("pl")}
-              aria-pressed={language === "pl"}
-              className={`type-label transition-colors duration-200 ${
-                language === "pl" ? "text-white" : "text-[var(--muted)] hover:text-white"
-              }`}
-            >
-              PL
-            </button>
+              <motion.span
+                aria-hidden
+                initial={false}
+                animate={language === "en" ? { x: 0 } : { x: "100%" }}
+                transition={{
+                  duration: prefersReducedMotion ? 0 : 0.24,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-[linear-gradient(135deg,rgba(88,118,216,0.3),rgba(60,82,152,0.2))] shadow-[0_0_0_1px_rgba(104,136,235,0.18),0_10px_24px_rgba(12,18,34,0.28)]"
+              />
+              {(["en", "pl"] as const).map((locale) => {
+                const active = language === locale;
+
+                return (
+                  <motion.button
+                    key={locale}
+                    type="button"
+                    onClick={() => onLanguageChange(locale)}
+                    aria-pressed={active}
+                    whileHover={prefersReducedMotion ? undefined : { y: -1 }}
+                    whileTap={prefersReducedMotion ? undefined : { scale: 0.96 }}
+                    className={`type-label relative z-10 min-w-[3.5rem] cursor-pointer rounded-full px-4 py-2 text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(148,176,255,0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
+                      active
+                        ? "font-semibold text-white"
+                        : "text-white/65 hover:text-white/88"
+                    }`}
+                  >
+                    {locale.toUpperCase()}
+                  </motion.button>
+                );
+              })}
+            </div>
           </motion.div>
           <div className="mx-auto w-full max-w-[84rem]">
             <div className="hero-grid relative z-20 grid items-center gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-x-[4.5rem] lg:gap-y-12">
@@ -440,7 +457,7 @@ export function Hero({
                       {content.ctas.linkedin}
                     </CtaButton>
                     <CtaButton
-                      href="mailto:hello@marcinjankiewicz.com"
+                      href={content.ctas.contactHref}
                       variant="secondary"
                     >
                       {content.ctas.contact}

@@ -79,7 +79,7 @@ export function Footer({
               {content.links.linkedin}
             </a>
             <a
-              href="mailto:hello@marcinjankiewicz.com"
+              href={`mailto:${content.links.email}`}
               className="transition-colors duration-300 hover:text-white"
             >
               {content.links.email}

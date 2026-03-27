@@ -23,6 +23,8 @@ type SiteContent = {
   footer: FooterContent;
 };
 
+const CONTACT_EMAIL = "m.p.jankiewicz@gmail.com";
+
 const siteContent: Record<Locale, SiteContent> = {
   en: {
     hero: {
@@ -38,6 +40,7 @@ const siteContent: Record<Locale, SiteContent> = {
       ctas: {
         linkedin: "LinkedIn",
         contact: "Contact",
+        contactHref: `mailto:${CONTACT_EMAIL}`,
       },
       proofPoints: [
         "Head of Product at Foodsi",
@@ -143,7 +146,7 @@ const siteContent: Record<Locale, SiteContent> = {
       titleLines: ["Let’s build something", "meaningful."],
       links: {
         linkedin: "LinkedIn",
-        email: "hello@marcinjankiewicz.com",
+        email: CONTACT_EMAIL,
       },
     },
   },
@@ -161,6 +164,7 @@ const siteContent: Record<Locale, SiteContent> = {
       ctas: {
         linkedin: "LinkedIn",
         contact: "Kontakt",
+        contactHref: `mailto:${CONTACT_EMAIL}`,
       },
       proofPoints: [
         "Head of Product w Foodsi",
@@ -265,7 +269,7 @@ const siteContent: Record<Locale, SiteContent> = {
       titleLines: ["Zbudujmy coś,", "co ma znaczenie."],
       links: {
         linkedin: "LinkedIn",
-        email: "hello@marcinjankiewicz.com",
+        email: CONTACT_EMAIL,
       },
     },
   },
