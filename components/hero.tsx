@@ -39,6 +39,59 @@ const heroReveal: Variants = {
   },
 };
 
+const heroSubtextVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.52,
+      delay: 0.78,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const heroActionsVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      delay: 0.92,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.08,
+      delayChildren: 0.02,
+    },
+  },
+};
+
+const heroActionItemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.42,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const heroProofVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.56,
+      delay: 1.02,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
 export function Hero({
   content,
   language,
@@ -73,28 +126,28 @@ export function Hero({
   useEffect(() => {
     if (prefersReducedMotion) return;
 
-    const portraitFloat = animate(floatDrift, [0, -10, 0, 10, 0], {
-      duration: 12.6,
+    const portraitFloat = animate(floatDrift, [0, -6, 0, 6, 0], {
+      duration: 13.2,
       repeat: Infinity,
       ease: "easeInOut",
     });
-    const portraitFloatX = animate(floatDriftX, [0, 8, -8, 0], {
-      duration: 11.8,
+    const portraitFloatX = animate(floatDriftX, [0, 5, -5, 0], {
+      duration: 12.4,
       repeat: Infinity,
       ease: "easeInOut",
     });
-    const portraitScale = animate(portraitBreath, [1, 1.015, 1], {
-      duration: 12.8,
+    const portraitScale = animate(portraitBreath, [1, 1.01, 1], {
+      duration: 13.8,
       repeat: Infinity,
       ease: "easeInOut",
     });
-    const portraitLightX = animate(portraitLightDriftX, [0, 22, -12, 0], {
-      duration: 34,
-      repeat: Infinity,
-      ease: "easeInOut",
-    });
-    const portraitLightY = animate(portraitLightDriftY, [0, -18, 12, 0], {
+    const portraitLightX = animate(portraitLightDriftX, [0, 14, -8, 0], {
       duration: 40,
+      repeat: Infinity,
+      ease: "easeInOut",
+    });
+    const portraitLightY = animate(portraitLightDriftY, [0, -12, 8, 0], {
+      duration: 46,
       repeat: Infinity,
       ease: "easeInOut",
     });
@@ -150,24 +203,24 @@ export function Hero({
     offset: ["start start", "end start"],
   });
 
-  const textParallaxX = useTransform(scrollYProgress, [0, 1], [0, -2.5]);
-  const portraitParallaxX = useTransform(scrollYProgress, [0, 1], [0, 6]);
-  const portraitParallaxY = useTransform(scrollYProgress, [0, 1], [0, 74]);
-  const lightParallaxX = useTransform(scrollYProgress, [0, 1], [0, -8]);
-  const lightParallaxY = useTransform(scrollYProgress, [0, 1], [0, 98]);
+  const textParallaxX = useTransform(scrollYProgress, [0, 1], [0, -1]);
+  const portraitParallaxX = useTransform(scrollYProgress, [0, 1], [0, 4]);
+  const portraitParallaxY = useTransform(scrollYProgress, [0, 1], [0, 48]);
+  const lightParallaxX = useTransform(scrollYProgress, [0, 1], [0, -5]);
+  const lightParallaxY = useTransform(scrollYProgress, [0, 1], [0, 62]);
   const lightOpacity = useTransform(
     scrollYProgress,
     [0, 0.35, 1],
-    [0.34, 0.54, 0.22],
+    [0.34, 0.5, 0.24],
   );
 
-  const imageParallaxX = useTransform(x, [-1, 1], [-16, 16]);
-  const imageParallaxY = useTransform(y, [-1, 1], [-12, 12]);
-  const imageRotate = useTransform(x, [-1, 1], [0.95, -0.05]);
-  const layerParallaxX = useTransform(x, [-1, 1], [-10, 10]);
-  const layerParallaxY = useTransform(y, [-1, 1], [-6, 6]);
-  const photoParallaxX = useTransform(x, [-1, 1], [-7, 7]);
-  const photoParallaxY = useTransform(y, [-1, 1], [-5, 5]);
+  const imageParallaxX = useTransform(x, [-1, 1], [-10, 10]);
+  const imageParallaxY = useTransform(y, [-1, 1], [-8, 8]);
+  const imageRotate = useTransform(x, [-1, 1], [0.4, -0.08]);
+  const layerParallaxX = useTransform(x, [-1, 1], [-5, 5]);
+  const layerParallaxY = useTransform(y, [-1, 1], [-3.5, 3.5]);
+  const photoParallaxX = useTransform(x, [-1, 1], [-4, 4]);
+  const photoParallaxY = useTransform(y, [-1, 1], [-3, 3]);
 
   const textLayerX = useTransform(() => textParallaxX.get());
   const portraitShellX = useTransform(() => portraitParallaxX.get());
@@ -188,28 +241,28 @@ export function Hero({
     () => lightParallaxY.get() + portraitLightY.get() * 0.5,
   );
 
-  const glow = useMotionTemplate`radial-gradient(500px circle at ${gx}px ${gy}px, rgba(90, 122, 222, 0.3), transparent 50%)`;
-  const neutralGlow = useMotionTemplate`radial-gradient(340px circle at ${gx}px ${gy}px, rgba(255, 255, 255, 0.1), transparent 46%)`;
+  const glow = useMotionTemplate`radial-gradient(420px circle at ${gx}px ${gy}px, rgba(90, 122, 222, 0.28), transparent 52%)`;
+  const neutralGlow = useMotionTemplate`radial-gradient(300px circle at ${gx}px ${gy}px, rgba(255, 255, 255, 0.08), transparent 48%)`;
 
   const lineScaleX = useTransform(lineProgress, [0, 1], [0, 1]);
-  const lineOpacity = useTransform(lineProgress, [0, 1], [0, 0.86]);
+  const lineOpacity = useTransform(lineProgress, [0, 1], [0, 0.68]);
   const trailProgress = useTransform(pathIntroProgress, [0, 0.14], [0, 1]);
   const trailOpacity = useTransform(
     trailProgress,
     [0, 0.2, 0.72, 1],
-    [0, 0.55, 0.22, 0],
+    [0, 0.4, 0.16, 0],
   );
   const trailGlowOpacity = useTransform(
     trailProgress,
     [0, 0.24, 1],
-    [0, 0.16, 0],
+    [0, 0.08, 0],
   );
   const signalHaloOpacity = useTransform(
     emitProgress,
     [0, 0.58, 1],
-    [0, 0.24, 0],
+    [0, 0.16, 0],
   );
-  const signalHaloScale = useTransform(emitProgress, [0, 1], [0.35, 1.3]);
+  const signalHaloScale = useTransform(emitProgress, [0, 1], [0.35, 1.2]);
   const signalDotOpacity = useTransform(
     () =>
       Math.max(emitProgress.get(), 0) * Math.max(0, 1 - trailProgress.get() * 0.95),
@@ -218,7 +271,7 @@ export function Hero({
   const anchorDotOpacity = useTransform(
     pathIntroProgress,
     [0, 0.05, 0.1, 0.14],
-    [0, 0, 0.18, 0.3],
+    [0, 0, 0.14, 0.22],
   );
   const anchorDotScale = useTransform(pathIntroProgress, [0, 0.14], [0.6, 1]);
   const portraitMask =
@@ -238,8 +291,8 @@ export function Hero({
     const px = (event.clientX - rect.left) / rect.width;
     const py = (event.clientY - rect.top) / rect.height;
 
-    rawX.set((px - 0.5) * 2);
-    rawY.set((py - 0.5) * 2);
+    rawX.set((px - 0.5) * 1.4);
+    rawY.set((py - 0.5) * 1.4);
     glowX.set(px * rect.width);
     glowY.set(py * rect.height);
   }
@@ -348,10 +401,10 @@ export function Hero({
                               d="M 220 72 C 198 88, 176 106, 154 132 S 114 182, 96 206"
                               fill="none"
                               stroke="rgba(127,159,255,0.36)"
-                              strokeWidth="8"
+                              strokeWidth="6"
                               strokeLinecap="round"
                               style={{ pathLength: trailProgress, opacity: trailGlowOpacity }}
-                              filter="blur(10px)"
+                              filter="blur(6px)"
                             />
                             <motion.circle
                               cx="220"
@@ -435,7 +488,7 @@ export function Hero({
                   </motion.div>
 
                   <motion.p
-                    variants={revealItem}
+                    variants={heroSubtextVariants}
                     className="hero-support hero-subtitle mt-6"
                   >
                     <span className="section-copy-line">
@@ -447,21 +500,25 @@ export function Hero({
                   </motion.p>
 
                   <motion.div
-                    variants={revealItem}
+                    variants={heroActionsVariants}
                     className="hero-actions mt-7 flex flex-wrap gap-4"
                   >
-                    <CtaButton
-                      href="https://www.linkedin.com/in/marcin-jankiewicz-89841588/"
-                      external
-                    >
-                      {content.ctas.linkedin}
-                    </CtaButton>
-                    <CtaButton
-                      href={content.ctas.contactHref}
-                      variant="secondary"
-                    >
-                      {content.ctas.contact}
-                    </CtaButton>
+                    <motion.span variants={heroActionItemVariants}>
+                      <CtaButton
+                        href="https://www.linkedin.com/in/marcin-jankiewicz-89841588/"
+                        external
+                      >
+                        {content.ctas.linkedin}
+                      </CtaButton>
+                    </motion.span>
+                    <motion.span variants={heroActionItemVariants}>
+                      <CtaButton
+                        href={content.ctas.contactHref}
+                        variant="secondary"
+                      >
+                        {content.ctas.contact}
+                      </CtaButton>
+                    </motion.span>
                   </motion.div>
                 </div>
               </motion.div>
@@ -569,7 +626,7 @@ export function Hero({
             </div>
 
             <motion.div
-              variants={revealItem}
+              variants={heroProofVariants}
               data-path-anchor="hero-proof"
               data-path-anchor-x="0.5"
               data-path-anchor-y="0.5"

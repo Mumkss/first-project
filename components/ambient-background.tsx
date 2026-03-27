@@ -9,31 +9,34 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function AmbientBackground() {
   const prefersReducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
+  const [cursorGlowEnabled, setCursorGlowEnabled] = useState(false);
 
   const driftX = useMotionValue(0);
   const driftY = useMotionValue(0);
   const lightDrift = useMotionValue(0);
+  const cursorX = useMotionValue(0);
+  const cursorY = useMotionValue(0);
 
   useEffect(() => {
     if (prefersReducedMotion) return;
 
-    const xDrift = animate(driftX, [0, 24, -12, 0], {
+    const xDrift = animate(driftX, [0, 14, -8, 0], {
+      duration: 54,
+      repeat: Infinity,
+      ease: "easeInOut",
+    });
+    const yDrift = animate(driftY, [0, -10, 6, 0], {
+      duration: 60,
+      repeat: Infinity,
+      ease: "easeInOut",
+    });
+    const glowDrift = animate(lightDrift, [0, 8, -5, 0], {
       duration: 48,
-      repeat: Infinity,
-      ease: "easeInOut",
-    });
-    const yDrift = animate(driftY, [0, -16, 10, 0], {
-      duration: 56,
-      repeat: Infinity,
-      ease: "easeInOut",
-    });
-    const glowDrift = animate(lightDrift, [0, 12, -8, 0], {
-      duration: 44,
       repeat: Infinity,
       ease: "easeInOut",
     });
@@ -45,13 +48,87 @@ export function AmbientBackground() {
     };
   }, [driftX, driftY, lightDrift, prefersReducedMotion]);
 
+  useEffect(() => {
+    if (prefersReducedMotion || typeof window === "undefined") {
+      setCursorGlowEnabled(false);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia(
+      "(hover: hover) and (pointer: fine) and (min-width: 1024px)",
+    );
+
+    const syncState = () => {
+      const enabled = mediaQuery.matches;
+      setCursorGlowEnabled(enabled);
+
+      if (enabled) {
+        cursorX.set(window.innerWidth * 0.68);
+        cursorY.set(window.innerHeight * 0.34);
+      }
+    };
+
+    syncState();
+
+    const handleChange = () => syncState();
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, [cursorX, cursorY, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!cursorGlowEnabled || prefersReducedMotion || typeof window === "undefined") {
+      return;
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      cursorX.set(event.clientX);
+      cursorY.set(event.clientY);
+    };
+
+    const handlePointerLeave = () => {
+      cursorX.set(window.innerWidth * 0.68);
+      cursorY.set(window.innerHeight * 0.34);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("pointerleave", handlePointerLeave, { passive: true });
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerleave", handlePointerLeave);
+    };
+  }, [cursorGlowEnabled, cursorX, cursorY, prefersReducedMotion]);
+
   const sx = useSpring(driftX, { stiffness: 24, damping: 18, mass: 1.2 });
   const sy = useSpring(driftY, { stiffness: 24, damping: 18, mass: 1.2 });
   const sg = useSpring(lightDrift, { stiffness: 24, damping: 18, mass: 1.2 });
+  const cursorPrimaryX = useSpring(cursorX, {
+    stiffness: 68,
+    damping: 24,
+    mass: 1.1,
+  });
+  const cursorPrimaryY = useSpring(cursorY, {
+    stiffness: 68,
+    damping: 24,
+    mass: 1.1,
+  });
+  const cursorSecondaryX = useSpring(cursorX, {
+    stiffness: 44,
+    damping: 26,
+    mass: 1.32,
+  });
+  const cursorSecondaryY = useSpring(cursorY, {
+    stiffness: 44,
+    damping: 26,
+    mass: 1.32,
+  });
 
-  const fieldY = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const glowY = useTransform(scrollYProgress, [0, 1], [0, 92]);
-  const grainY = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const fieldY = useTransform(scrollYProgress, [0, 1], [0, 72]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [0, 54]);
+  const grainY = useTransform(scrollYProgress, [0, 1], [0, 20]);
 
   const layerOneX = useTransform(() => sx.get() * 0.7);
   const layerOneY = useTransform(() => fieldY.get() + sy.get());
@@ -59,7 +136,29 @@ export function AmbientBackground() {
   const layerTwoY = useTransform(() => glowY.get() + sg.get());
   const layerThreeX = useTransform(() => sx.get() * 0.12);
   const layerThreeY = useTransform(() => grainY.get() + sy.get() * 0.12);
-  const grainOpacity = useTransform(scrollYProgress, [0, 1], [0.035, 0.05]);
+  const grainOpacity = useTransform(scrollYProgress, [0, 1], [0.03, 0.042]);
+  const cursorGlowPrimaryX = useTransform(
+    () => cursorPrimaryX.get() - 256 + sx.get() * 0.08,
+  );
+  const cursorGlowPrimaryY = useTransform(
+    () => cursorPrimaryY.get() - 256 + glowY.get() * 0.1,
+  );
+  const cursorGlowSecondaryX = useTransform(
+    () => cursorSecondaryX.get() - 320 + sx.get() * 0.04,
+  );
+  const cursorGlowSecondaryY = useTransform(
+    () => cursorSecondaryY.get() - 320 + glowY.get() * 0.08,
+  );
+  const cursorGlowPrimaryOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.24, 1],
+    [0.16, 0.13, 0.08],
+  );
+  const cursorGlowSecondaryOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.24, 1],
+    [0.09, 0.07, 0.04],
+  );
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
@@ -81,6 +180,28 @@ export function AmbientBackground() {
         style={prefersReducedMotion ? undefined : { x: layerThreeX, y: layerThreeY, opacity: grainOpacity }}
         className="absolute inset-0 mix-blend-soft-light [background-image:radial-gradient(rgba(255,255,255,0.14)_0.7px,transparent_0.8px)] [background-size:18px_18px]"
       />
+      {cursorGlowEnabled && !prefersReducedMotion ? (
+        <>
+          <motion.div
+            style={{
+              x: cursorGlowSecondaryX,
+              y: cursorGlowSecondaryY,
+              opacity: cursorGlowSecondaryOpacity,
+              willChange: "transform, opacity",
+            }}
+            className="absolute left-0 top-0 h-[40rem] w-[40rem] rounded-full bg-[radial-gradient(circle,rgba(96,122,220,0.22)_0%,rgba(96,122,220,0.08)_34%,transparent_72%)] blur-[140px]"
+          />
+          <motion.div
+            style={{
+              x: cursorGlowPrimaryX,
+              y: cursorGlowPrimaryY,
+              opacity: cursorGlowPrimaryOpacity,
+              willChange: "transform, opacity",
+            }}
+            className="absolute left-0 top-0 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(120,150,255,0.24)_0%,rgba(104,132,232,0.12)_36%,transparent_70%)] blur-[110px]"
+          />
+        </>
+      ) : null}
     </div>
   );
 }

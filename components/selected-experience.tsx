@@ -32,7 +32,7 @@ const eyebrowVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.28,
+      duration: 0.3,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
@@ -44,7 +44,7 @@ const headlineVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.52,
+      duration: 0.54,
       delay: 0.06,
       ease: [0.22, 1, 0.36, 1] as const,
     },
@@ -58,7 +58,7 @@ const flagshipVariants: Variants = {
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.6,
+      duration: 0.62,
       delay: 0.18,
       ease: [0.22, 1, 0.36, 1] as const,
     },
@@ -71,8 +71,8 @@ const rowIntroVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.46,
-      delay: 0.34 + index * 0.1,
+      duration: 0.44,
+      delay: 0.32 + index * 0.09,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   }),
@@ -226,27 +226,7 @@ function FlagshipCard({
         className="pointer-events-none absolute inset-y-0 left-[-18%] w-[38%] -skew-x-12 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent)]"
       />
 
-      <motion.span
-        aria-hidden
-        animate={
-          prefersReducedMotion
-            ? undefined
-            : {
-                opacity: [0.14, 0.3, 0.14],
-                scale: [1, 1.14, 1],
-              }
-        }
-        transition={
-          prefersReducedMotion
-            ? undefined
-            : {
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }
-        }
-        className="pointer-events-none absolute left-8 top-10 h-8 w-8 rounded-full bg-[rgba(88,118,216,0.14)]"
-      />
+      <span className="pointer-events-none absolute left-8 top-10 h-8 w-8 rounded-full bg-[rgba(88,118,216,0.14)]" />
       {active ? (
         <motion.span
           key={`flagship-flash-${activationTick}`}
@@ -262,7 +242,7 @@ function FlagshipCard({
         initial={false}
         animate={
           active
-            ? { opacity: 1, y: 0, scale: 1.01 }
+            ? { opacity: 1, y: 0, scale: 1.008 }
             : { opacity: 0.92, y: 2, scale: 1 }
         }
         transition={{
@@ -341,7 +321,7 @@ function RoleRow({
         initial={false}
         animate={active ? { opacity: 0.32, scaleY: 1 } : { opacity: 0, scaleY: 0.72 }}
         transition={{
-          duration: prefersReducedMotion ? 0 : 0.32,
+          duration: prefersReducedMotion ? 0 : 0.26,
           ease: [0.22, 1, 0.36, 1],
         }}
         className="pointer-events-none absolute left-6 top-4 h-16 w-px origin-top bg-[linear-gradient(180deg,rgba(148,176,255,0.44),transparent)] sm:left-7"
@@ -359,11 +339,11 @@ function RoleRow({
         initial={false}
         animate={
           active
-            ? { opacity: 1, scale: [1, 1.45, 1] }
+            ? { opacity: 1, scale: [1, 1.35, 1] }
             : { opacity: 0.82, scale: 1 }
         }
         transition={{
-          duration: prefersReducedMotion ? 0 : active ? 0.38 : 0.24,
+          duration: prefersReducedMotion ? 0 : active ? 0.3 : 0.22,
           ease: [0.22, 1, 0.36, 1],
         }}
         className="pointer-events-none absolute left-6 top-6 h-1 w-1 rounded-full bg-white/80 sm:left-7"
@@ -374,10 +354,10 @@ function RoleRow({
         animate={
           active
             ? { opacity: 1, y: 0, scale: 1.01 }
-            : { opacity: inactiveOpacity, y: 4, scale: 1 }
+            : { opacity: inactiveOpacity, y: 3, scale: 1 }
         }
         transition={{
-          duration: prefersReducedMotion ? 0 : 0.36,
+          duration: prefersReducedMotion ? 0 : 0.3,
           ease: [0.22, 1, 0.36, 1],
         }}
         className="ml-5 flex flex-col gap-3 sm:ml-6 md:flex-row md:items-start md:justify-between"
