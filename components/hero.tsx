@@ -411,9 +411,9 @@ export function Hero({
             >
               <motion.div
                 variants={heroImageVariants}
-                className="hero-scene-mobile absolute inset-x-[-10%] top-[6.5rem] bottom-[30%] z-0 sm:top-[6rem] sm:bottom-[24%] lg:hidden"
+                className="hero-scene-mobile absolute bottom-[34%] left-[38%] right-[-18%] top-[5.75rem] z-0 sm:inset-x-[-10%] sm:top-[6rem] sm:bottom-[24%] lg:hidden"
               >
-                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[42%] bg-[linear-gradient(90deg,rgba(4,5,8,0.98)_0%,rgba(4,5,8,0.88)_42%,rgba(4,5,8,0.34)_78%,transparent_100%)]" />
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[58%] bg-[linear-gradient(90deg,rgba(4,5,8,0.995)_0%,rgba(4,5,8,0.94)_48%,rgba(4,5,8,0.48)_78%,transparent_100%)] sm:w-[42%] sm:bg-[linear-gradient(90deg,rgba(4,5,8,0.98)_0%,rgba(4,5,8,0.88)_42%,rgba(4,5,8,0.34)_78%,transparent_100%)]" />
                 <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(4,5,8,0.16),transparent_22%,transparent_82%,rgba(4,5,8,0.18))]" />
                 <motion.div
                   aria-hidden
@@ -439,7 +439,7 @@ export function Hero({
                           scale: bloomScale,
                         }
                   }
-                  className="pointer-events-none absolute right-[8%] top-[10%] h-[72%] w-[48%] rounded-full bg-[radial-gradient(circle,rgba(145,178,255,0.28),transparent_68%)] blur-[86px]"
+                  className="pointer-events-none absolute right-[2%] top-[8%] h-[72%] w-[54%] rounded-full bg-[radial-gradient(circle,rgba(145,178,255,0.24),transparent_70%)] blur-[86px] sm:right-[8%] sm:top-[10%] sm:h-[72%] sm:w-[48%]"
                 />
                 <motion.div
                   style={
@@ -473,7 +473,7 @@ export function Hero({
                         priority
                         quality={82}
                         sizes="(max-width: 1023px) 100vw, 54vw"
-                        className="object-cover object-[62%_14%] scale-[1.1]"
+                        className="object-cover object-[74%_16%] scale-[1.03] sm:object-[62%_14%] sm:scale-[1.1]"
                       />
                     </motion.div>
                   </div>
@@ -583,13 +583,13 @@ export function Hero({
               />
 
               <div className="relative z-20 flex min-h-[inherit]">
-                <motion.div className="relative flex min-h-[40rem] w-full items-center py-16 sm:min-h-[44rem] sm:py-18 lg:min-h-[max(48rem,calc(100svh-6rem))] lg:py-22">
-                  <div className="hero-copy-center hero-text-field relative w-full max-w-[36rem] sm:max-w-[38rem] lg:max-w-[41rem] lg:-translate-y-6 lg:pl-8 xl:pl-10">
+                <motion.div className="relative flex min-h-[41rem] w-full items-center py-[3.75rem] sm:min-h-[44rem] sm:py-18 lg:min-h-[max(48rem,calc(100svh-6rem))] lg:py-22">
+                  <div className="hero-copy-center hero-text-field relative w-full max-w-[36rem] pr-3 sm:max-w-[38rem] sm:pr-0 lg:max-w-[41rem] lg:-translate-y-6 lg:pl-8 xl:pl-10">
                     <p className="type-label text-[var(--muted)]">
                       Marcin Jankiewicz
                     </p>
 
-                    <motion.div className="hero-headline relative mt-8 text-white sm:mt-10">
+                    <motion.div className="hero-headline relative mt-7 text-white sm:mt-10">
                       <div className="relative overflow-visible pb-[0.14em]">
                         {!prefersReducedMotion ? (
                           <div className="pointer-events-none absolute right-full top-[0.46em] mr-7 hidden h-44 w-52 -translate-y-1/2 lg:block">
@@ -705,14 +705,14 @@ export function Hero({
 
                     <motion.p
                       variants={heroSubtextVariants}
-                      className="hero-support hero-subtitle mt-6 sm:mt-7"
+                      className="hero-support hero-subtitle mt-5 sm:mt-7"
                     >
                       {content.subtitleLines.join(" ")}
                     </motion.p>
 
                     <motion.div
                       variants={heroActionsVariants}
-                      className="hero-actions mt-6 flex flex-wrap gap-3.5 sm:mt-8 sm:gap-4"
+                      className="hero-actions mt-5 flex flex-wrap gap-3 sm:mt-8 sm:gap-4"
                     >
                       <motion.span variants={heroActionItemVariants}>
                         <CtaButton

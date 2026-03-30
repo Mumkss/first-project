@@ -204,33 +204,45 @@ body {
 }
 
 @media (max-width: 639px) {
-  .hero-stage {
+  .hero-frame {
     min-height: auto;
   }
 
+  .hero-stage {
+    min-height: max(41rem, calc(100svh - 3.5rem));
+  }
+
   .hero-text-field {
-    max-width: 100%;
+    max-width: min(19rem, calc(100% - 4.75rem));
+  }
+
+  .hero-headline {
+    max-width: 19rem;
+  }
+
+  .hero-line {
+    gap: 0.14em;
   }
 
   .hero-line-top {
-    font-size: 40px;
+    font-size: 34px;
     line-height: 1.02;
-    letter-spacing: -0.012em;
-    word-spacing: 0.012em;
+    letter-spacing: -0.014em;
+    word-spacing: 0.008em;
   }
 
   .hero-line-bottom {
-    font-size: 54px;
-    line-height: 0.96;
-    letter-spacing: -0.016em;
-    word-spacing: 0.01em;
+    font-size: 46px;
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+    word-spacing: 0.008em;
   }
 
   .hero-subtitle {
-    width: 100%;
-    max-width: 100%;
+    width: min(18rem, calc(100% - 4.25rem));
+    max-width: 18rem;
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.55;
   }
 
   .type-h2 {
