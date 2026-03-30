@@ -20,7 +20,7 @@ export function Footer({
   return (
     <footer
       id="contact"
-      className="relative px-6 pb-24 pt-20 sm:px-8 lg:px-12 lg:pb-36 lg:pt-28"
+      className="relative px-6 pb-20 pt-18 sm:px-8 sm:pb-24 sm:pt-20 lg:px-12 lg:pb-32 lg:pt-24 xl:pb-36 xl:pt-28"
     >
       <motion.div
         initial="hidden"
@@ -34,7 +34,7 @@ export function Footer({
             },
           },
         }}
-        className="mx-auto max-w-7xl border-t border-[color:rgba(255,255,255,0.06)] pt-18 lg:pt-20"
+        className="mx-auto max-w-7xl border-t border-[color:rgba(255,255,255,0.06)] pt-14 sm:pt-18 lg:pt-20"
       >
         <motion.div
           variants={revealItem}

@@ -102,15 +102,15 @@ export function SelectedExperience({
   return (
     <section
       id="experience"
-      className="relative isolate px-6 py-28 sm:px-8 sm:py-32 lg:px-12 lg:py-40"
+      className="relative isolate px-6 py-22 sm:px-8 sm:py-26 lg:px-12 lg:py-32 xl:py-40"
     >
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.18 }}
-        className="relative z-10 mx-auto max-w-7xl lg:grid lg:grid-cols-[minmax(280px,0.92fr)_minmax(0,1.08fr)] lg:gap-[4.75rem]"
+        className="relative z-10 mx-auto max-w-7xl xl:grid xl:grid-cols-[minmax(280px,0.92fr)_minmax(0,1.08fr)] xl:gap-[4.75rem]"
       >
-        <div className="lg:sticky lg:top-28 lg:self-start">
+        <div className="xl:sticky xl:top-28 xl:self-start">
           <motion.p
             variants={eyebrowVariants}
             className="type-label text-[var(--muted)]"
@@ -126,7 +126,7 @@ export function SelectedExperience({
           </motion.h2>
         </div>
 
-        <div className="relative mt-14 space-y-4 lg:mt-0">
+        <div className="relative mt-12 space-y-4 sm:mt-14 xl:mt-0">
           {flagship ? (
             <FlagshipCard
               item={flagship}

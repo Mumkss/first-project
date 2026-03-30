@@ -24,47 +24,66 @@ export type SignatureAreasContent = {
 };
 
 const sectionVariants: Variants = {
-  hidden: { opacity: 0, y: 36 },
+  hidden: {},
   visible: {
-    opacity: 1,
-    y: 0,
     transition: {
-      duration: 0.64,
-      ease: [0.22, 1, 0.36, 1] as const,
       when: "beforeChildren",
-      staggerChildren: 0.1,
+      delayChildren: 0.16,
     },
   },
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 18 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.58,
+      duration: 0.5,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
   hover: {
-    scale: 1.01,
+    scale: 1.008,
     y: -2,
     transition: {
-      duration: 0.22,
+      duration: 0.2,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   },
 };
 
+const introVariants: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: 0.34,
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+};
+
+const cardsContainerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      delayChildren: 0.9,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
 const headlineLineVariants: Variants = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 14 },
   visible: (index: number = 0) => ({
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.58,
-      delay: index * 0.18,
+      duration: 0.5,
+      delay: index * 0.12,
       ease: [0.22, 1, 0.36, 1] as const,
     },
   }),
@@ -80,17 +99,17 @@ export function SignatureAreas({
   return (
     <section
       id="impact"
-      className="relative px-6 py-30 sm:px-8 sm:py-34 lg:px-12 lg:py-44"
+      className="relative px-6 py-22 sm:px-8 sm:py-26 lg:px-12 lg:py-34 xl:py-40"
     >
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.18 }}
         variants={sectionVariants}
-        className="relative mx-auto max-w-7xl"
+        className="relative mx-auto max-w-[72rem] xl:max-w-7xl"
       >
         <div className="relative z-10">
-          <div className="max-w-[760px]">
+          <div className="max-w-[40rem] sm:max-w-[44rem] lg:max-w-[47.5rem]">
             <motion.h2
               data-path-anchor="signature-title"
               data-path-anchor-x="0.14"
@@ -114,19 +133,8 @@ export function SignatureAreas({
             </motion.h2>
 
             <motion.div
-              variants={{
-                hidden: { opacity: 0, y: 16 },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  transition: {
-                    delay: 0.12,
-                    duration: 0.58,
-                    ease: [0.22, 1, 0.36, 1],
-                  },
-                },
-              }}
-              className="section-copy-block mt-10 max-w-[38rem] space-y-5 text-[var(--muted-strong)]"
+              variants={introVariants}
+              className="section-copy-block mt-8 max-w-[36rem] space-y-5 text-[var(--muted-strong)] sm:mt-10"
             >
               {content.intro.map((paragraph) => (
                 <p key={paragraph.id}>
@@ -146,7 +154,7 @@ export function SignatureAreas({
             </motion.div>
           </div>
 
-          <div className="relative mt-16 lg:mt-20">
+          <div className="relative mt-14 sm:mt-16 lg:mt-20">
             <div className="pointer-events-none absolute inset-x-[4%] top-8 hidden h-[300px] xl:block">
               <svg
                 viewBox="0 0 1600 320"
@@ -203,16 +211,8 @@ export function SignatureAreas({
             </div>
 
             <motion.div
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: {
-                    delayChildren: 0.08,
-                    staggerChildren: 0.1,
-                  },
-                },
-              }}
-              className="grid gap-5 lg:grid-cols-2 xl:grid-cols-4"
+              variants={cardsContainerVariants}
+              className="grid gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-4"
             >
               {content.items.map((item, index) => (
                 <SignalCard

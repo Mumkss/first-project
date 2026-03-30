@@ -16,6 +16,7 @@ import { useEffect, useRef, type MouseEvent } from "react";
 import { CtaButton } from "@/components/cta-button";
 import { useHeroSequence, useRevealStyles } from "@/components/hero-sequence";
 import { revealItem } from "@/components/reveal";
+import { usePerformanceMode } from "@/components/use-performance-mode";
 
 export type HeroContent = {
   languageLabel: string;
@@ -35,6 +36,30 @@ const heroReveal: Variants = {
   visible: {
     transition: {
       staggerChildren: 0.1,
+    },
+  },
+};
+
+const heroImageVariants: Variants = {
+  hidden: { opacity: 0, scale: 1.04 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const heroOverlayVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.72,
+      delay: 0.12,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 };
@@ -102,6 +127,8 @@ export function Hero({
   onLanguageChange: (language: "en" | "pl") => void;
 }) {
   const prefersReducedMotion = useReducedMotion();
+  const isConstrained = usePerformanceMode();
+  const disableContinuousMotion = prefersReducedMotion || isConstrained;
   const heroRef = useRef<HTMLElement | null>(null);
   const {
     lineProgress,
@@ -109,6 +136,7 @@ export function Hero({
     wordTwo,
     wordThree,
     wordFour,
+    bloomProgress,
     emitProgress,
     pathIntroProgress,
   } = useHeroSequence();
@@ -124,7 +152,7 @@ export function Hero({
   const portraitBreath = useMotionValue(1);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (disableContinuousMotion) return;
 
     const portraitFloat = animate(floatDrift, [0, -6, 0, 6, 0], {
       duration: 13.2,
@@ -165,7 +193,7 @@ export function Hero({
     portraitLightDriftX,
     portraitLightDriftY,
     portraitBreath,
-    prefersReducedMotion,
+    disableContinuousMotion,
   ]);
 
   const x = useSpring(rawX, { stiffness: 120, damping: 18, mass: 0.45 });
@@ -203,36 +231,50 @@ export function Hero({
     offset: ["start start", "end start"],
   });
 
-  const textParallaxX = useTransform(scrollYProgress, [0, 1], [0, -1]);
-  const portraitParallaxX = useTransform(scrollYProgress, [0, 1], [0, 4]);
-  const portraitParallaxY = useTransform(scrollYProgress, [0, 1], [0, 48]);
-  const lightParallaxX = useTransform(scrollYProgress, [0, 1], [0, -5]);
-  const lightParallaxY = useTransform(scrollYProgress, [0, 1], [0, 62]);
+  const sceneParallaxX = useTransform(
+    scrollYProgress,
+    [0, 1],
+    disableContinuousMotion ? [0, 0] : [0, 18],
+  );
+  const sceneParallaxY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    disableContinuousMotion ? [0, 0] : [0, 60],
+  );
+  const lightParallaxX = useTransform(
+    scrollYProgress,
+    [0, 1],
+    disableContinuousMotion ? [0, 0] : [0, -8],
+  );
+  const lightParallaxY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    disableContinuousMotion ? [0, 0] : [0, 74],
+  );
   const lightOpacity = useTransform(
     scrollYProgress,
     [0, 0.35, 1],
-    [0.34, 0.5, 0.24],
+    [0.34, 0.52, 0.24],
   );
 
-  const imageParallaxX = useTransform(x, [-1, 1], [-10, 10]);
-  const imageParallaxY = useTransform(y, [-1, 1], [-8, 8]);
-  const imageRotate = useTransform(x, [-1, 1], [0.4, -0.08]);
-  const layerParallaxX = useTransform(x, [-1, 1], [-5, 5]);
-  const layerParallaxY = useTransform(y, [-1, 1], [-3.5, 3.5]);
-  const photoParallaxX = useTransform(x, [-1, 1], [-4, 4]);
-  const photoParallaxY = useTransform(y, [-1, 1], [-3, 3]);
+  const imageParallaxX = useTransform(x, [-1, 1], [-12, 12]);
+  const imageParallaxY = useTransform(y, [-1, 1], [-9, 9]);
+  const imageRotate = useTransform(x, [-1, 1], [0.9, -0.9]);
+  const photoParallaxX = useTransform(x, [-1, 1], [-5, 5]);
+  const photoParallaxY = useTransform(y, [-1, 1], [-4, 4]);
 
-  const textLayerX = useTransform(() => textParallaxX.get());
-  const portraitShellX = useTransform(() => portraitParallaxX.get());
-  const portraitShellY = useTransform(() => portraitParallaxY.get());
-  const imageLayerX = useTransform(() => imageParallaxX.get() + floatX.get());
-  const imageLayerY = useTransform(() => imageParallaxY.get() + floatY.get());
-  const imageLayerScale = useTransform(() => breathScale.get());
+  const sceneLayerX = useTransform(
+    () => sceneParallaxX.get() + imageParallaxX.get() * 0.42 + floatX.get() * 0.8,
+  );
+  const sceneLayerY = useTransform(
+    () => sceneParallaxY.get() + imageParallaxY.get() * 0.5 + floatY.get(),
+  );
+  const sceneLayerScale = useTransform(() => breathScale.get());
   const photoLayerX = useTransform(
-    () => photoParallaxX.get() + floatX.get() * 0.76,
+    () => photoParallaxX.get() + floatX.get() * 0.48,
   );
   const photoLayerY = useTransform(
-    () => photoParallaxY.get() + floatY.get() * 0.76,
+    () => photoParallaxY.get() + floatY.get() * 0.56,
   );
   const lightLayerX = useTransform(
     () => lightParallaxX.get() + portraitLightX.get() * 0.5,
@@ -241,8 +283,10 @@ export function Hero({
     () => lightParallaxY.get() + portraitLightY.get() * 0.5,
   );
 
-  const glow = useMotionTemplate`radial-gradient(420px circle at ${gx}px ${gy}px, rgba(90, 122, 222, 0.28), transparent 52%)`;
-  const neutralGlow = useMotionTemplate`radial-gradient(300px circle at ${gx}px ${gy}px, rgba(255, 255, 255, 0.08), transparent 48%)`;
+  const glow = useMotionTemplate`radial-gradient(560px circle at ${gx}px ${gy}px, rgba(90, 122, 222, 0.3), transparent 58%)`;
+  const neutralGlow = useMotionTemplate`radial-gradient(340px circle at ${gx}px ${gy}px, rgba(255, 255, 255, 0.08), transparent 52%)`;
+  const bloomOpacity = useTransform(bloomProgress, [0, 0.42, 1], [0, 0.22, 0]);
+  const bloomScale = useTransform(bloomProgress, [0, 1], [0.86, 1.18]);
 
   const lineScaleX = useTransform(lineProgress, [0, 1], [0, 1]);
   const lineOpacity = useTransform(lineProgress, [0, 1], [0, 0.68]);
@@ -275,7 +319,7 @@ export function Hero({
   );
   const anchorDotScale = useTransform(pathIntroProgress, [0, 0.14], [0.6, 1]);
   const portraitMask =
-    "radial-gradient(118% 118% at 56% 38%, rgba(0,0,0,1) 54%, rgba(0,0,0,0.96) 68%, rgba(0,0,0,0.72) 82%, transparent 100%)";
+    "linear-gradient(90deg,transparent 0%, rgba(0,0,0,0.14) 8%, rgba(0,0,0,0.88) 20%, rgba(0,0,0,1) 36%, rgba(0,0,0,1) 100%)";
 
   const strategyStyles = useRevealStyles(wordOne);
   const mattersStyles = useRevealStyles(wordTwo);
@@ -285,7 +329,7 @@ export function Hero({
   const [headlineSecondA, headlineSecondB] = content.headlineLines[1];
 
   function handlePointerMove(event: MouseEvent<HTMLDivElement>) {
-    if (prefersReducedMotion) return;
+    if (disableContinuousMotion) return;
 
     const rect = event.currentTarget.getBoundingClientRect();
     const px = (event.clientX - rect.left) / rect.width;
@@ -307,7 +351,7 @@ export function Hero({
   return (
     <section
       ref={heroRef}
-      className="hero-shell relative overflow-hidden px-6 py-8 sm:px-8 lg:px-12 lg:py-10"
+      className="hero-shell relative overflow-hidden px-5 py-6 sm:px-8 sm:py-8 lg:px-12 lg:py-10"
     >
       <div className="mx-auto max-w-[84rem]">
         <motion.div
@@ -318,7 +362,7 @@ export function Hero({
         >
           <motion.div
             variants={revealItem}
-            className="absolute right-0 top-0 z-30"
+            className="absolute right-0 top-0 z-30 sm:right-1"
             aria-label={content.languageLabel}
           >
             <div
@@ -360,179 +404,21 @@ export function Hero({
             </div>
           </motion.div>
           <div className="mx-auto w-full max-w-[84rem]">
-            <div className="hero-grid relative z-20 grid items-center gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-x-[4.5rem] lg:gap-y-12">
-              <div className="pointer-events-none absolute inset-y-[12%] left-[53.5%] hidden w-28 -translate-x-1/2 bg-[linear-gradient(90deg,rgba(11,11,12,0),rgba(11,11,12,0.2),rgba(11,11,12,0))] blur-3xl lg:block" />
+            <div
+              onMouseMove={handlePointerMove}
+              onMouseLeave={handlePointerLeave}
+              className="hero-stage relative isolate overflow-hidden"
+            >
               <motion.div
-                style={prefersReducedMotion ? undefined : { x: textLayerX }}
-                className="hero-copy relative z-20 flex min-h-[32rem] flex-col py-4 lg:min-w-0 lg:py-8"
+                variants={heroImageVariants}
+                className="hero-scene-mobile absolute inset-x-[-10%] top-[6.5rem] bottom-[30%] z-0 sm:top-[6rem] sm:bottom-[24%] lg:hidden"
               >
-                <div>
-                  <p className="type-label text-[var(--muted)]">
-                    Marcin Jankiewicz
-                  </p>
-                </div>
-
-                <div className="hero-copy-center my-auto max-w-[38.5rem] py-10 lg:py-0">
-                  <motion.div className="hero-headline relative max-w-[38.5rem] text-white">
-                    <div className="relative overflow-visible pb-[0.18em]">
-                      {!prefersReducedMotion ? (
-                        <div className="pointer-events-none absolute right-full top-[0.44em] mr-7 hidden h-44 w-52 -translate-y-1/2 lg:block">
-                          <motion.span
-                            style={{ scaleX: lineScaleX, opacity: lineOpacity }}
-                            data-path-anchor="hero-origin"
-                            data-path-anchor-x="1"
-                            data-path-anchor-y="0.5"
-                            className="absolute right-0 top-14 h-px w-12 origin-right bg-[linear-gradient(90deg,rgba(168,191,255,0.98),rgba(109,145,255,0.92)_56%,transparent)]"
-                          />
-                          <svg
-                            viewBox="0 0 220 220"
-                            className="absolute inset-0 h-full w-full overflow-visible"
-                            aria-hidden
-                          >
-                            <motion.path
-                              d="M 220 72 C 198 88, 176 106, 154 132 S 114 182, 96 206"
-                              fill="none"
-                              stroke="rgba(127,159,255,0.72)"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              style={{ pathLength: trailProgress, opacity: trailOpacity }}
-                            />
-                            <motion.path
-                              d="M 220 72 C 198 88, 176 106, 154 132 S 114 182, 96 206"
-                              fill="none"
-                              stroke="rgba(127,159,255,0.36)"
-                              strokeWidth="6"
-                              strokeLinecap="round"
-                              style={{ pathLength: trailProgress, opacity: trailGlowOpacity }}
-                              filter="blur(6px)"
-                            />
-                            <motion.circle
-                              cx="220"
-                              cy="72"
-                              r="12"
-                              fill="none"
-                              stroke="rgba(188,204,255,0.48)"
-                              strokeWidth="1"
-                              style={{
-                                opacity: signalHaloOpacity,
-                                scale: signalHaloScale,
-                                originX: "50%",
-                                originY: "50%",
-                              }}
-                            />
-                            <motion.circle
-                              cx="220"
-                              cy="72"
-                              r="4.5"
-                              fill="rgba(226,233,255,0.98)"
-                              style={{
-                                opacity: signalDotOpacity,
-                                scale: signalDotScale,
-                                originX: "50%",
-                                originY: "50%",
-                              }}
-                            />
-                            <motion.circle
-                              cx="220"
-                              cy="72"
-                              r="2.75"
-                              fill="rgba(210,223,255,0.8)"
-                              style={{
-                                opacity: anchorDotOpacity,
-                                scale: anchorDotScale,
-                                originX: "50%",
-                                originY: "50%",
-                              }}
-                            />
-                          </svg>
-                        </div>
-                      ) : (
-                        <span
-                          data-path-anchor="hero-origin"
-                          data-path-anchor-x="1"
-                          data-path-anchor-y="0.5"
-                          className="pointer-events-none absolute right-full top-[0.44em] mr-7 hidden h-px w-12 bg-[linear-gradient(90deg,rgba(168,191,255,0.96),rgba(109,145,255,0.92)_56%,transparent)] lg:block"
-                        />
-                      )}
-                      <div className="hero-line">
-                        <motion.span
-                          style={prefersReducedMotion ? undefined : strategyStyles}
-                          className="inline-block"
-                        >
-                          {headlineFirstA}
-                        </motion.span>
-                        <motion.span
-                          style={prefersReducedMotion ? undefined : mattersStyles}
-                          className="inline-block"
-                        >
-                          {headlineFirstB}
-                        </motion.span>
-                      </div>
-                    </div>
-                    <div className="overflow-visible pb-[0.18em]">
-                      <div className="hero-line">
-                        <motion.span
-                          style={prefersReducedMotion ? undefined : shippingStyles}
-                          className="inline-block"
-                        >
-                          {headlineSecondA}
-                        </motion.span>
-                        <motion.span
-                          style={prefersReducedMotion ? undefined : decidesStyles}
-                          className="inline-block"
-                        >
-                          {headlineSecondB}
-                        </motion.span>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  <motion.p
-                    variants={heroSubtextVariants}
-                    className="hero-support hero-subtitle mt-6"
-                  >
-                    <span className="section-copy-line">
-                      {content.subtitleLines[0]}
-                    </span>
-                    <span className="section-copy-line">
-                      {content.subtitleLines[1]}
-                    </span>
-                  </motion.p>
-
-                  <motion.div
-                    variants={heroActionsVariants}
-                    className="hero-actions mt-7 flex flex-wrap gap-4"
-                  >
-                    <motion.span variants={heroActionItemVariants}>
-                      <CtaButton
-                        href="https://www.linkedin.com/in/marcin-jankiewicz-89841588/"
-                        external
-                      >
-                        {content.ctas.linkedin}
-                      </CtaButton>
-                    </motion.span>
-                    <motion.span variants={heroActionItemVariants}>
-                      <CtaButton
-                        href={content.ctas.contactHref}
-                        variant="secondary"
-                      >
-                        {content.ctas.contact}
-                      </CtaButton>
-                    </motion.span>
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={revealItem}
-                onMouseMove={handlePointerMove}
-                onMouseLeave={handlePointerLeave}
-                className="hero-media relative flex items-center justify-center lg:min-w-0 lg:justify-center"
-              >
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[42%] bg-[linear-gradient(90deg,rgba(4,5,8,0.98)_0%,rgba(4,5,8,0.88)_42%,rgba(4,5,8,0.34)_78%,transparent_100%)]" />
+                <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(4,5,8,0.16),transparent_22%,transparent_82%,rgba(4,5,8,0.18))]" />
                 <motion.div
                   aria-hidden
                   style={
-                    prefersReducedMotion
+                    disableContinuousMotion
                       ? undefined
                       : {
                           background: glow,
@@ -541,88 +427,313 @@ export function Hero({
                           opacity: lightOpacity,
                         }
                   }
-                  className="pointer-events-none absolute inset-[-12%] z-0 blur-[112px]"
+                  className="pointer-events-none absolute inset-[-10%] blur-[92px]"
                 />
                 <motion.div
                   aria-hidden
                   style={
-                    prefersReducedMotion
+                    disableContinuousMotion
                       ? undefined
-                      : { background: neutralGlow, x: lightLayerX, y: lightLayerY }
-                  }
-                  className="pointer-events-none absolute inset-[2%] z-0 blur-[88px]"
-                />
-                <motion.div
-                  aria-hidden
-                  style={
-                    prefersReducedMotion
-                      ? undefined
-                      : { x: layerParallaxX, y: layerParallaxY }
-                  }
-                  className="pointer-events-none absolute -left-10 right-4 top-10 z-0 h-[78%] rounded-[56px] bg-[radial-gradient(circle_at_58%_28%,rgba(152,180,255,0.18),transparent_22%),radial-gradient(circle_at_62%_42%,rgba(77,108,211,0.32),transparent_46%),linear-gradient(160deg,rgba(255,255,255,0.04),transparent_24%)] blur-[122px] lg:-left-8 lg:right-2"
-                />
-
-                <motion.div
-                  style={
-                    prefersReducedMotion
-                      ? undefined
-                      : { x: portraitShellX, y: portraitShellY }
-                  }
-                  className="relative z-20 w-full max-w-[33rem] lg:max-w-[35rem] lg:translate-x-3 lg:translate-y-3"
-                >
-                  <div className="pointer-events-none absolute inset-x-[10%] -bottom-10 z-0 h-20 rounded-full bg-[radial-gradient(circle,rgba(0,0,0,0.62),transparent_74%)] blur-3xl" />
-                  <div className="pointer-events-none absolute inset-[-5%] z-0 rounded-[42px] bg-[radial-gradient(circle_at_60%_36%,rgba(129,164,255,0.18),transparent_42%)] blur-[82px]" />
-                  <motion.div
-                    initial={prefersReducedMotion ? false : { scale: 1.03 }}
-                    animate={prefersReducedMotion ? undefined : { scale: 1 }}
-                    transition={
-                      prefersReducedMotion
-                        ? undefined
-                        : { duration: 0.82, ease: [0.22, 1, 0.36, 1] }
-                    }
-                    style={
-                      prefersReducedMotion
-                        ? undefined
-                        : {
-                            x: imageLayerX,
-                            y: imageLayerY,
-                            rotate: imageRotate,
-                            scale: imageLayerScale,
-                          }
-                    }
-                    className="relative overflow-hidden rounded-[34px] shadow-[0_72px_180px_rgba(0,0,0,0.58),0_24px_72px_rgba(0,0,0,0.24)]"
-                  >
-                    <div className="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(90deg,rgba(6,7,10,0.34),transparent_24%,transparent_82%,rgba(6,7,10,0.14)),linear-gradient(180deg,rgba(6,7,10,0.02),transparent_56%,rgba(6,7,10,0.2)_100%)]" />
-                    <div className="pointer-events-none absolute inset-x-[-6%] top-[-10%] z-20 h-[42%] bg-[radial-gradient(circle_at_60%_16%,rgba(255,255,255,0.18),transparent_42%)] blur-[40px]" />
-                    <div className="hero-portrait relative aspect-[4/5] min-h-[460px] w-full">
-                      <motion.div
-                        style={
-                          prefersReducedMotion
-                            ? {
-                                WebkitMaskImage: portraitMask,
-                                maskImage: portraitMask,
-                              }
-                            : {
-                                x: photoLayerX,
-                                y: photoLayerY,
-                                WebkitMaskImage: portraitMask,
-                                maskImage: portraitMask,
-                              }
+                      : {
+                          opacity: bloomOpacity,
+                          scale: bloomScale,
                         }
-                        className="absolute inset-0"
-                      >
-                        <Image
-                          src="/marcin.jpg"
-                          alt={content.imageAlt}
-                          fill
-                          priority
-                          className="object-cover object-[55%_15%] scale-[1.11]"
-                        />
-                      </motion.div>
-                    </div>
-                  </motion.div>
+                  }
+                  className="pointer-events-none absolute right-[8%] top-[10%] h-[72%] w-[48%] rounded-full bg-[radial-gradient(circle,rgba(145,178,255,0.28),transparent_68%)] blur-[86px]"
+                />
+                <motion.div
+                  style={
+                    disableContinuousMotion
+                      ? undefined
+                      : {
+                          x: sceneLayerX,
+                          y: sceneLayerY,
+                          rotate: imageRotate,
+                          scale: sceneLayerScale,
+                        }
+                  }
+                  className="absolute inset-0"
+                >
+                  <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.4)_18%,rgba(0,0,0,0.92)_42%,rgba(0,0,0,0.98)_78%,transparent_100%)]">
+                    <motion.div
+                      style={
+                        disableContinuousMotion
+                          ? undefined
+                          : {
+                              x: photoLayerX,
+                              y: photoLayerY,
+                            }
+                      }
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src="/marcin.jpg"
+                        alt={content.imageAlt}
+                        fill
+                        priority
+                        quality={82}
+                        sizes="(max-width: 1023px) 100vw, 54vw"
+                        className="object-cover object-[62%_14%] scale-[1.1]"
+                      />
+                    </motion.div>
+                  </div>
                 </motion.div>
               </motion.div>
+
+              <motion.div
+                variants={heroImageVariants}
+                className="hero-scene-desktop absolute -right-[12%] -top-[4%] bottom-[-6%] z-0 hidden w-[50%] overflow-hidden lg:block xl:-right-[15%] xl:-top-[7%] xl:bottom-[-10%] xl:w-[54%]"
+              >
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[44%] bg-[linear-gradient(90deg,rgba(4,5,8,1)_0%,rgba(4,5,8,0.94)_32%,rgba(4,5,8,0.62)_68%,transparent_100%)]" />
+                <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(4,5,8,0.12),transparent_18%,transparent_82%,rgba(4,5,8,0.16))]" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-[linear-gradient(90deg,transparent,rgba(4,5,8,0.24)_42%,rgba(4,5,8,0.72)_100%)]" />
+                <div className="pointer-events-none absolute right-0 top-0 z-10 h-20 w-20 bg-[radial-gradient(circle_at_top_right,rgba(4,5,8,0.8)_0%,rgba(4,5,8,0.34)_42%,transparent_76%)]" />
+                <motion.div
+                  aria-hidden
+                  style={
+                    disableContinuousMotion
+                      ? undefined
+                      : {
+                          background: glow,
+                          x: lightLayerX,
+                          y: lightLayerY,
+                          opacity: lightOpacity,
+                        }
+                  }
+                  className="pointer-events-none absolute inset-[-14%] blur-[112px]"
+                />
+                <motion.div
+                  aria-hidden
+                  style={
+                    disableContinuousMotion
+                      ? undefined
+                      : {
+                          background: neutralGlow,
+                          x: lightLayerX,
+                          y: lightLayerY,
+                          opacity: 0.8,
+                        }
+                  }
+                  className="pointer-events-none absolute inset-[8%_-10%_2%_12%] blur-[88px]"
+                />
+                <motion.div
+                  aria-hidden
+                  style={
+                    disableContinuousMotion
+                      ? undefined
+                      : {
+                          opacity: bloomOpacity,
+                          scale: bloomScale,
+                        }
+                  }
+                  className="pointer-events-none absolute right-[12%] top-[14%] h-[70%] w-[42%] rounded-full bg-[radial-gradient(circle,rgba(150,181,255,0.26),transparent_68%)] blur-[96px]"
+                />
+                <motion.div
+                  style={
+                    disableContinuousMotion
+                      ? undefined
+                      : {
+                          x: sceneLayerX,
+                          y: sceneLayerY,
+                          rotate: imageRotate,
+                          scale: sceneLayerScale,
+                        }
+                  }
+                  className="absolute inset-0"
+                >
+                  <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,0.1)_8%,rgba(0,0,0,0.86)_22%,rgba(0,0,0,1)_38%,rgba(0,0,0,1)_100%)]">
+                    <motion.div
+                      style={
+                        disableContinuousMotion
+                          ? undefined
+                          : {
+                              x: photoLayerX,
+                              y: photoLayerY,
+                              WebkitMaskImage: portraitMask,
+                              maskImage: portraitMask,
+                            }
+                      }
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src="/marcin.jpg"
+                        alt={content.imageAlt}
+                        fill
+                        priority
+                        quality={82}
+                        sizes="(max-width: 1023px) 100vw, 54vw"
+                        className="object-cover object-[70%_14%] scale-[1.14]"
+                      />
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              <motion.div
+                variants={heroOverlayVariants}
+                className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(90deg,rgba(4,5,8,0.99)_0%,rgba(4,5,8,0.98)_34%,rgba(4,5,8,0.9)_52%,rgba(4,5,8,0.62)_68%,rgba(4,5,8,0.24)_82%,rgba(4,5,8,0.08)_100%),linear-gradient(180deg,rgba(4,5,8,0.08)_0%,transparent_30%,rgba(4,5,8,0.22)_100%)]"
+              />
+              <motion.div
+                variants={heroOverlayVariants}
+                className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_8%_32%,rgba(255,255,255,0.03),transparent_36%),radial-gradient(circle_at_100%_0%,rgba(255,255,255,0.03),transparent_28%)]"
+              />
+              <motion.div
+                variants={heroOverlayVariants}
+                className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[76%] bg-[linear-gradient(90deg,rgba(4,5,8,0.98),rgba(4,5,8,0.95)_54%,rgba(4,5,8,0.72)_74%,transparent_100%)] sm:w-[72%] lg:w-[66%] xl:w-[64%]"
+              />
+
+              <div className="relative z-20 flex min-h-[inherit]">
+                <motion.div className="relative flex min-h-[40rem] w-full items-center py-16 sm:min-h-[44rem] sm:py-18 lg:min-h-[max(48rem,calc(100svh-6rem))] lg:py-22">
+                  <div className="hero-copy-center hero-text-field relative w-full max-w-[36rem] sm:max-w-[38rem] lg:max-w-[41rem] lg:-translate-y-6 lg:pl-8 xl:pl-10">
+                    <p className="type-label text-[var(--muted)]">
+                      Marcin Jankiewicz
+                    </p>
+
+                    <motion.div className="hero-headline relative mt-8 text-white sm:mt-10">
+                      <div className="relative overflow-visible pb-[0.14em]">
+                        {!prefersReducedMotion ? (
+                          <div className="pointer-events-none absolute right-full top-[0.46em] mr-7 hidden h-44 w-52 -translate-y-1/2 lg:block">
+                            <motion.span
+                              style={{ scaleX: lineScaleX, opacity: lineOpacity }}
+                              data-path-anchor="hero-origin"
+                              data-path-anchor-x="1"
+                              data-path-anchor-y="0.5"
+                              className="absolute right-0 top-14 h-px w-12 origin-right bg-[linear-gradient(90deg,rgba(168,191,255,0.98),rgba(109,145,255,0.92)_56%,transparent)]"
+                            />
+                            <svg
+                              viewBox="0 0 220 220"
+                              className="absolute inset-0 h-full w-full overflow-visible"
+                              aria-hidden
+                            >
+                              <motion.path
+                                d="M 220 72 C 198 88, 176 106, 154 132 S 114 182, 96 206"
+                                fill="none"
+                                stroke="rgba(127,159,255,0.72)"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                style={{ pathLength: trailProgress, opacity: trailOpacity }}
+                              />
+                              <motion.path
+                                d="M 220 72 C 198 88, 176 106, 154 132 S 114 182, 96 206"
+                                fill="none"
+                                stroke="rgba(127,159,255,0.36)"
+                                strokeWidth="6"
+                                strokeLinecap="round"
+                                style={{ pathLength: trailProgress, opacity: trailGlowOpacity }}
+                                filter="blur(6px)"
+                              />
+                              <motion.circle
+                                cx="220"
+                                cy="72"
+                                r="12"
+                                fill="none"
+                                stroke="rgba(188,204,255,0.48)"
+                                strokeWidth="1"
+                                style={{
+                                  opacity: signalHaloOpacity,
+                                  scale: signalHaloScale,
+                                  originX: "50%",
+                                  originY: "50%",
+                                }}
+                              />
+                              <motion.circle
+                                cx="220"
+                                cy="72"
+                                r="4.5"
+                                fill="rgba(226,233,255,0.98)"
+                                style={{
+                                  opacity: signalDotOpacity,
+                                  scale: signalDotScale,
+                                  originX: "50%",
+                                  originY: "50%",
+                                }}
+                              />
+                              <motion.circle
+                                cx="220"
+                                cy="72"
+                                r="2.75"
+                                fill="rgba(210,223,255,0.8)"
+                                style={{
+                                  opacity: anchorDotOpacity,
+                                  scale: anchorDotScale,
+                                  originX: "50%",
+                                  originY: "50%",
+                                }}
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          <span
+                            data-path-anchor="hero-origin"
+                            data-path-anchor-x="1"
+                            data-path-anchor-y="0.5"
+                            className="pointer-events-none absolute right-full top-[0.46em] mr-7 hidden h-px w-12 bg-[linear-gradient(90deg,rgba(168,191,255,0.96),rgba(109,145,255,0.92)_56%,transparent)] lg:block"
+                          />
+                        )}
+                        <div className="hero-line hero-line-top">
+                          <motion.span
+                            style={prefersReducedMotion ? undefined : strategyStyles}
+                            className="inline-block"
+                          >
+                            {headlineFirstA}
+                          </motion.span>
+                          <motion.span
+                            style={prefersReducedMotion ? undefined : mattersStyles}
+                            className="inline-block"
+                          >
+                            {headlineFirstB}
+                          </motion.span>
+                        </div>
+                      </div>
+                      <div className="overflow-visible pb-[0.14em]">
+                        <div className="hero-line hero-line-bottom">
+                          <motion.span
+                            style={prefersReducedMotion ? undefined : shippingStyles}
+                            className="inline-block"
+                          >
+                            {headlineSecondA}
+                          </motion.span>
+                          <motion.span
+                            style={prefersReducedMotion ? undefined : decidesStyles}
+                            className="inline-block"
+                          >
+                            {headlineSecondB}
+                          </motion.span>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.p
+                      variants={heroSubtextVariants}
+                      className="hero-support hero-subtitle mt-6 sm:mt-7"
+                    >
+                      {content.subtitleLines.join(" ")}
+                    </motion.p>
+
+                    <motion.div
+                      variants={heroActionsVariants}
+                      className="hero-actions mt-6 flex flex-wrap gap-3.5 sm:mt-8 sm:gap-4"
+                    >
+                      <motion.span variants={heroActionItemVariants}>
+                        <CtaButton
+                          href="https://www.linkedin.com/in/marcin-jankiewicz-89841588/"
+                          external
+                        >
+                          {content.ctas.linkedin}
+                        </CtaButton>
+                      </motion.span>
+                      <motion.span variants={heroActionItemVariants}>
+                        <CtaButton
+                          href={content.ctas.contactHref}
+                          variant="secondary"
+                        >
+                          {content.ctas.contact}
+                        </CtaButton>
+                      </motion.span>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
 
             <motion.div
@@ -630,7 +741,7 @@ export function Hero({
               data-path-anchor="hero-proof"
               data-path-anchor-x="0.5"
               data-path-anchor-y="0.5"
-              className="hero-proof-row relative z-20 mt-14 border-t border-white/[0.08] pt-8 text-[var(--muted)] lg:mt-16 lg:pt-10"
+              className="hero-proof-row relative z-20 mt-12 border-t border-white/[0.08] pt-6 text-[var(--muted)] sm:mt-14 sm:pt-8 lg:mt-16 lg:pt-10"
             >
               <motion.div
                 aria-hidden

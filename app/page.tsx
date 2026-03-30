@@ -1,27 +1,67 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { AmbientBackground } from "@/components/ambient-background";
-import { Footer, type FooterContent } from "@/components/footer";
+import type { FooterContent } from "@/components/footer";
 import { Hero, type HeroContent } from "@/components/hero";
 import { HeroSequenceProvider } from "@/components/hero-sequence";
-import {
-  SignatureAreas,
-  type SignatureAreasContent,
-} from "@/components/signature-areas";
-import {
-  SelectedExperience,
-  type SelectedExperienceContent,
-} from "@/components/selected-experience";
+import type { SignatureAreasContent } from "@/components/signature-areas";
+import type { SelectedWorkContent } from "@/components/selected-work";
+import type { SelectedExperienceContent } from "@/components/selected-experience";
 
 type Locale = "en" | "pl";
 
 type SiteContent = {
   hero: HeroContent;
   signature: SignatureAreasContent;
+  work: SelectedWorkContent;
   experience: SelectedExperienceContent;
   footer: FooterContent;
 };
+
+function SectionPlaceholder({ className }: { className: string }) {
+  return <div aria-hidden className={className} />;
+}
+
+const SignatureAreas = dynamic(
+  () => import("@/components/signature-areas").then((mod) => mod.SignatureAreas),
+  {
+    loading: () => (
+      <SectionPlaceholder className="px-6 py-22 sm:px-8 sm:py-26 lg:px-12 lg:py-34 xl:py-40" />
+    ),
+  },
+);
+
+const SelectedWork = dynamic(
+  () => import("@/components/selected-work").then((mod) => mod.SelectedWork),
+  {
+    loading: () => (
+      <SectionPlaceholder className="px-6 py-20 sm:px-8 sm:py-22 lg:px-12 lg:py-24" />
+    ),
+  },
+);
+
+const SelectedExperience = dynamic(
+  () =>
+    import("@/components/selected-experience").then(
+      (mod) => mod.SelectedExperience,
+    ),
+  {
+    loading: () => (
+      <SectionPlaceholder className="px-6 py-22 sm:px-8 sm:py-26 lg:px-12 lg:py-32 xl:py-40" />
+    ),
+  },
+);
+
+const Footer = dynamic(
+  () => import("@/components/footer").then((mod) => mod.Footer),
+  {
+    loading: () => (
+      <SectionPlaceholder className="px-6 pb-20 pt-18 sm:px-8 sm:pb-24 sm:pt-20 lg:px-12 lg:pb-32 lg:pt-24 xl:pb-36 xl:pt-28" />
+    ),
+  },
+);
 
 const CONTACT_EMAIL = "m.p.jankiewicz@gmail.com";
 
@@ -87,6 +127,56 @@ const siteContent: Record<Locale, SiteContent> = {
           id: "data-signal",
           title: "Data",
           sentenceLines: ["Signal", "vs noise"],
+        },
+      ],
+    },
+    work: {
+      titleLines: ["Real products.", "Real movement."],
+      items: [
+        {
+          id: "foodsi-case",
+          name: "Foodsi",
+          role: "Head of Product",
+          years: "2024 — Present",
+          description:
+            "Scaled product direction across customer experience, marketplace logic, and business execution.",
+          bullets: [
+            "Sharpened priorities across product, operations, and growth.",
+            "Turned marketplace complexity into clearer product decisions.",
+          ],
+          imageSrc: "/foodsi.png",
+          imageAlt: "Foodsi product mockup",
+          visualTone: "foodsi",
+        },
+        {
+          id: "booksy-case",
+          name: "Booksy",
+          role: "Product Manager",
+          years: "2021 — 2022",
+          description:
+            "Product work shaped for scale, clarity and stronger decision-making.",
+          bullets: [
+            "Made product complexity easier to understand at scale.",
+            "Turned signals from users, teams, and business into clearer priorities.",
+          ],
+          imageSrc: "/booksy.png",
+          imageAlt: "Booksy product mockup",
+          visualTone: "booksy",
+        },
+        {
+          id: "tylko-case",
+          name: "Tylko",
+          role: "Product Manager",
+          years: "2020 — 2021",
+          description:
+            "Product ownership where design precision met real delivery constraints.",
+          bullets: [
+            "Connected design intent with product constraints and implementation.",
+            "Kept execution sharper without losing the quality of the experience.",
+          ],
+          imageSrc: "/tylko.png",
+          imageAlt: "Tylko product mockup",
+          visualTone: "tylko",
         },
       ],
     },
@@ -214,6 +304,56 @@ const siteContent: Record<Locale, SiteContent> = {
         },
       ],
     },
+    work: {
+      titleLines: ["Realne produkty.", "Realny ruch."],
+      items: [
+        {
+          id: "foodsi-case",
+          name: "Foodsi",
+          role: "Head of Product",
+          years: "2024 — Obecnie",
+          description:
+            "Skalowanie kierunku produktu między doświadczeniem klienta, logiką marketplace’u i egzekucją biznesową.",
+          bullets: [
+            "Wyostrzenie priorytetów między produktem, operacją i wzrostem.",
+            "Zamiana złożoności marketplace’u w czytelniejsze decyzje produktowe.",
+          ],
+          imageSrc: "/foodsi.png",
+          imageAlt: "Makieta produktu Foodsi",
+          visualTone: "foodsi",
+        },
+        {
+          id: "booksy-case",
+          name: "Booksy",
+          role: "Product Manager",
+          years: "2021 — 2022",
+          description:
+            "Produkt na etapie skali, gdzie porządek przekładał się na lepsze decyzje.",
+          bullets: [
+            "Upraszczałem złożoność w szybko rosnącym środowisku.",
+            "Łączyłem sygnały od użytkowników, zespołów i biznesu w czytelne priorytety.",
+          ],
+          imageSrc: "/booksy.png",
+          imageAlt: "Makieta produktu Booksy",
+          visualTone: "booksy",
+        },
+        {
+          id: "tylko-case",
+          name: "Tylko",
+          role: "Product Manager",
+          years: "2020 — 2021",
+          description:
+            "Produkt na styku jakości doświadczenia i realnych ograniczeń wdrożenia.",
+          bullets: [
+            "Spinałem intencję projektową z ograniczeniami produktu i wdrożenia.",
+            "Podnosiłem jakość dowożenia bez rozmywania doświadczenia.",
+          ],
+          imageSrc: "/tylko.png",
+          imageAlt: "Makieta produktu Tylko",
+          visualTone: "tylko",
+        },
+      ],
+    },
     experience: {
       eyebrow: "Przywództwo produktowe",
       titleLines: ["Decyzje,", "które działają."],
@@ -297,6 +437,7 @@ export default function Home() {
             onLanguageChange={setLanguage}
           />
           <SignatureAreas content={content.signature} />
+          <SelectedWork content={content.work} />
           <SelectedExperience content={content.experience} />
           <Footer content={content.footer} />
         </HeroSequenceProvider>
